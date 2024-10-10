@@ -118,4 +118,4 @@ mvn test
 ```
 
 ## 9. ** UML diagram**
-![Class diagram](UML diagram/ClassDiagram.png)
+![Class diagram](./UML diagram/ClassDiagram.png)

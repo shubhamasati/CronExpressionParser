@@ -1,12 +1,13 @@
 package org.hank;
 
+import org.hank.exceptions.InvalidCronExpressionException;
 import org.hank.exceptions.InvalidCronFieldException;
 import org.hank.model.CronExpression;
 import org.hank.service.CronExpressionService;
 import org.hank.service.impl.CronExpressionServiceImpl;
 
 public class CronExpressionParserApp {
-    public static void main(String[] args) throws InvalidCronFieldException {
+    public static void main(String[] args) throws InvalidCronFieldException, InvalidCronExpressionException {
 
         String inputExpression = args[0];
 

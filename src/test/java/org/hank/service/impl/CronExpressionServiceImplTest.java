@@ -4,6 +4,7 @@ import lombok.Getter;
 import org.assertj.core.api.AbstractThrowableAssert;
 import org.assertj.core.api.Assertions;
 import org.hank.enums.FieldType;
+import org.hank.exceptions.InvalidCronExpressionException;
 import org.hank.exceptions.InvalidCronFieldException;
 import org.hank.model.Command;
 import org.hank.model.CronExpression;
@@ -20,7 +21,7 @@ class CronExpressionServiceImplTest {
 
     @DisplayName("Should parse the expression successfully given the valid cron string")
     @Test
-    void shouldValidateSuccessfullyWhenGivenValidCronString() throws InvalidCronFieldException {
+    void shouldValidateSuccessfullyWhenGivenValidCronString() throws InvalidCronFieldException, InvalidCronExpressionException {
         String cronString = "*/15 0 1,15 * 1-5 /usr/bin/find";
 
         String expectedFormattedString = "minute        0 15 30 45\n" +
@@ -71,6 +72,18 @@ class CronExpressionServiceImplTest {
         Assertions.assertThat(underTest.printCronExpression(cronExpression))
                 .isNotNull()
                 .isEqualToIgnoringCase(expectedFormattedString);
+    }
+
+    @DisplayName("Should raise the exception when given the invalid number of fields in cron")
+    @Test
+    void shouldRaiseExceptionOnInvalidFieldNumbers() throws InvalidCronFieldException {
+        String cronString = "*/15 0 1,15 * 1-5";
+
+        AbstractThrowableAssert<?, ? extends Throwable> abstractThrowableAssert = Assertions.assertThatThrownBy(() -> underTest.parseCronExpression(cronString));
+        abstractThrowableAssert
+                .isInstanceOf(InvalidCronExpressionException.class)
+                .hasMessage("Invalid cron expression, incorrect number of fields!");
+
     }
 
 

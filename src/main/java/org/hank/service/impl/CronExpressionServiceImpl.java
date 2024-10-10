@@ -1,6 +1,7 @@
 package org.hank.service.impl;
 
 import org.hank.enums.FieldType;
+import org.hank.exceptions.InvalidCronExpressionException;
 import org.hank.exceptions.InvalidCronFieldException;
 import org.hank.model.Command;
 import org.hank.model.CronExpression;
@@ -21,9 +22,13 @@ public class CronExpressionServiceImpl implements CronExpressionService {
     }
 
     @Override
-    public CronExpression parseCronExpression(String expression) throws InvalidCronFieldException {
+    public CronExpression parseCronExpression(String expression) throws InvalidCronFieldException, InvalidCronExpressionException {
         expression = expression.strip();
         String[] fields = expression.split(" ");
+
+        if (fields.length != 6) {
+            throw new InvalidCronExpressionException("Invalid cron expression, incorrect number of fields!");
+        }
 
         CronField minute = new CronField(fields[FieldType.MINUTE.getPosition()], FieldType.MINUTE);
         CronField hour = new CronField(fields[FieldType.HOUR.getPosition()], FieldType.HOUR);
