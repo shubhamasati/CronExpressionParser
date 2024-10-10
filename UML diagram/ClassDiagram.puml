@@ -1,0 +1,106 @@
+@startuml
+
+!theme plain
+top to bottom direction
+skinparam linetype ortho
+
+class Command {
+  - type: FieldType
+  - command: String
+  + getType(): FieldType
+  + getCommand(): String
+  + setType(FieldType): void
+  + setCommand(String): void
+  + getParsedValues(): String
+}
+
+class CronExpression {
+  - hour: CronField
+  - dayOfMonth: CronField
+  - minute: CronField
+  - dayOfWeek: CronField
+  - command: Command
+  - month: CronField
+  + getMinute(): CronField
+  + getHour(): CronField
+  + getDayOfMonth(): CronField
+  + getMonth(): CronField
+  + getDayOfWeek(): CronField
+  + getCommand(): Command
+  + builder(): CronExpressionBuilder
+}
+class CronExpressionParserApp {
+  + main(String[]): void
+}
+interface CronExpressionService << interface >> {
+  + printCronExpression(CronExpression): String
+  + parseCronExpression(String): CronExpression
+}
+class CronExpressionServiceImpl {
+  + printCronExpression(CronExpression): String
+  + parseCronExpression(String): CronExpression
+}
+class CronField {
+  - type: FieldType
+  - fieldExpression: String
+  - values: List<Integer>
+  + getType(): FieldType
+  + getFieldExpression(): String
+  + getValues(): List<Integer>
+  + getParsedValues(): String
+  - parseField(): List<Integer>
+}
+class DefaultParser {
+  + parse(String, FieldType): List<Integer>
+}
+interface FieldParser << interface >> {
+  + parse(String, FieldType): List<Integer>
+}
+class FieldParserFactory {
+  + getParser(String): FieldParser
+}
+enum FieldType << enumeration >> {
+  + DAY_OF_WEEK:
+  - maxValue: int
+  + MINUTE:
+  - alias: String
+  + HOUR:
+  + COMMAND:
+  - position: int
+  + DAY_OF_MONTH:
+  + MONTH:
+  - minValue: int
+  + getPositionMap(): Map<Integer, FieldType>
+  + getAlias(): String
+  + getPosition(): int
+  + getMinValue(): int
+  + getMaxValue(): int
+  + valueOf(String): FieldType
+  + values(): FieldType[]
+}
+class FixedValueParser {
+  + parse(String, FieldType): List<Integer>
+}
+class IntervalParser {
+  + parse(String, FieldType): List<Integer>
+}
+class InvalidCronFieldException
+class RangeParser {
+  + parse(String, FieldType): List<Integer>
+  - getMaxVal(String[], FieldType): int
+  - getMinVal(String[], FieldType): int
+}
+
+CronExpressionServiceImpl  -[#008200,dashed]-^  CronExpressionService
+DefaultParser              -[#008200,dashed]-^  FieldParser
+FixedValueParser           -[#008200,dashed]-^  FieldParser
+IntervalParser             -[#008200,dashed]-^  FieldParser
+RangeParser                -[#008200,dashed]-^  FieldParser
+CronExpression              *-- CronField
+CronExpression              *-- Command
+CronExpressionService -[#008200,dashed]-> CronExpression : uses
+FieldParserFactory *-- FieldParser
+CronField *-- FieldType
+CronField -[#008200,dashed]-> FieldParserFactory : uses
+CronExpressionParserApp -[#008200,dashed]-> CronExpressionServiceImpl : uses
+@enduml
